@@ -50,6 +50,13 @@
   --level-4: #8a660a;
 }
 
+[data-scheme="purple"] {
+  --level-1: #e8d5f2;
+  --level-2: #d0a8e8;
+  --level-3: #a855d9;
+  --level-4: #6b21a8;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -143,6 +150,18 @@ button:focus-visible {
   border-radius: 12px;
   padding: 6px;
   box-shadow: var(--shadow);
+}
+
+@media (max-width: 640px) {
+  .tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .tabs {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tab {
