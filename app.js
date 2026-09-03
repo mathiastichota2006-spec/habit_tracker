@@ -7,7 +7,10 @@
   var CATEGORIES = [
     { id: "studium", label: "Studium", scale: 6 },
     { id: "spanek", label: "Spánek", scale: 9 },
-    { id: "cviceni", label: "Cvičení", scale: 2 }
+    { id: "cviceni", label: "Cvičení", scale: 2 },
+    { id: "programovani", label: "Programování", scale: 4 },
+    { id: "umeni", label: "Umění", scale: 3 },
+    { id: "hudba", label: "Hudba", scale: 2 }
   ];
 
   var dateFormatter = new Intl.DateTimeFormat("cs-CZ", {
@@ -71,7 +74,7 @@
       }
       return {
         theme: parsed.theme === "dark" ? "dark" : "light",
-        scheme: ["green", "red", "blue", "yellow"].indexOf(parsed.scheme) >= 0 ? parsed.scheme : "green",
+        scheme: ["green", "red", "blue", "yellow", "purple"].indexOf(parsed.scheme) >= 0 ? parsed.scheme : "green",
         startDate: typeof parsed.startDate === "string" ? parsed.startDate : fallback.startDate,
         entries: parsed.entries && typeof parsed.entries === "object" ? parsed.entries : {}
       };
@@ -169,31 +172,24 @@
     title.textContent = dateFormatter.format(fromKey(key));
     tooltip.appendChild(title);
 
-    var descriptions = [];
-    CATEGORIES.forEach(function (category) {
-      var record = getRecord(key, category.id);
-      var row = document.createElement("div");
-      row.className = "tooltip-row";
-      var label = document.createElement("span");
-      label.textContent = category.label;
-      var value = document.createElement("span");
-      value.textContent = formatHours(record ? record.hours : 0);
-      row.appendChild(label);
-      row.appendChild(value);
-      tooltip.appendChild(row);
+    var category = categoryById(activeCategory);
+    var record = getRecord(key, category.id);
+    var row = document.createElement("div");
+    row.className = "tooltip-row";
+    var label = document.createElement("span");
+    label.textContent = category.label;
+    var value = document.createElement("span");
+    value.textContent = formatHours(record ? record.hours : 0);
+    row.appendChild(label);
+    row.appendChild(value);
+    tooltip.appendChild(row);
 
-      if (record && record.description) {
-        descriptions.push(category.label + ": " + record.description);
-      }
-    });
-
-    if (descriptions.length > 0) {
+    if (record && record.description) {
       var note = document.createElement("p");
       note.className = "tooltip-desc";
-      note.textContent = descriptions.join("\n");
-      note.style.whiteSpace = "pre-line";
+      note.textContent = category.label + ": " + record.description;
       tooltip.appendChild(note);
-    } else if (!getDay(key)) {
+    } else if (!record) {
       var empty = document.createElement("p");
       empty.className = "tooltip-desc";
       empty.textContent = "Žádný záznam pro tento den.";
