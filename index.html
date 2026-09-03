@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="light" data-scheme="green">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sledování návyků</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1 class="app-title">Sledování návyků</h1>
+      <div class="header-controls">
+        <label class="control">
+          <span class="control-label">Barva mapy</span>
+          <select id="scheme-select" aria-label="Barevné schéma teplotní mapy">
+            <option value="green">Zelená</option>
+            <option value="red">Červená</option>
+            <option value="blue">Modrá</option>
+            <option value="yellow">Žlutá</option>
+          </select>
+        </label>
+        <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Přepnout motiv">
+          Tmavý motiv
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Kategorie návyků">
+      <button class="tab is-active" role="tab" type="button" data-category="studium" aria-selected="true">
+        Studium
+      </button>
+      <button class="tab" role="tab" type="button" data-category="spanek" aria-selected="false">
+        Spánek
+      </button>
+      <button class="tab" role="tab" type="button" data-category="cviceni" aria-selected="false">
+        Cvičení
+      </button>
+    </nav>
+
+    <main class="layout">
+      <section class="card heatmap-card">
+        <div class="card-head">
+          <h2 class="card-title">Posledních 30 dní</h2>
+          <p class="card-subtitle" id="heatmap-subtitle">Studium</p>
+        </div>
+        <div class="heatmap" id="heatmap"></div>
+        <div class="legend">
+          <span class="legend-label">Méně</span>
+          <span class="legend-cell" data-level="0"></span>
+          <span class="legend-cell" data-level="1"></span>
+          <span class="legend-cell" data-level="2"></span>
+          <span class="legend-cell" data-level="3"></span>
+          <span class="legend-cell" data-level="4"></span>
+          <span class="legend-label">Více</span>
+        </div>
+
+        <form class="entry-form" id="entry-form">
+          <h3 class="form-title">Přidat záznam</h3>
+          <div class="form-row">
+            <label class="field">
+              <span class="field-label">Datum</span>
+              <input type="date" id="entry-date" required />
+            </label>
+            <label class="field">
+              <span class="field-label">Hodiny</span>
+              <input type="number" id="entry-hours" min="0" max="24" step="0.25" placeholder="např. 2,5" required />
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label">Popis</span>
+            <textarea id="entry-description" rows="2" placeholder="Co jsi dnes dělal(a)?"></textarea>
+          </label>
+          <button type="submit" class="primary-button">Uložit záznam</button>
+          <p class="form-message" id="form-message" role="status"></p>
+        </form>
+      </section>
+
+      <aside class="card summary-card">
+        <div class="card-head">
+          <h2 class="card-title">Průměrný čas</h2>
+          <p class="card-subtitle" id="summary-range"></p>
+        </div>
+        <ul class="summary-list" id="summary-list"></ul>
+        <div class="summary-total">
+          <span>Celkem denně</span>
+          <strong id="summary-total">0 h</strong>
+        </div>
+      </aside>
+    </main>
+
+    <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
