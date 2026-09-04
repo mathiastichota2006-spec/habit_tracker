@@ -26,6 +26,10 @@
   var elements = {
     root: document.documentElement,
     themeToggle: document.getElementById("theme-toggle"),
+    exportButton: document.getElementById("export-data"),
+    importButton: document.getElementById("import-data"),
+    importFileInput: document.getElementById("import-file-input"),
+    dataMessage: document.getElementById("data-message"),
     schemeSelect: document.getElementById("scheme-select"),
     tabs: Array.prototype.slice.call(document.querySelectorAll(".tab")),
     heatmap: document.getElementById("heatmap"),
@@ -62,6 +66,42 @@
     return { theme: "light", scheme: "green", startDate: toKey(new Date()), entries: {} };
   }
 
+  function isValidEntries(entries) {
+    if (!entries || typeof entries !== "object" || Array.isArray(entries)) {
+      return false;
+    }
+    return Object.keys(entries).every(function (key) {
+      var day = entries[key];
+      if (!day || typeof day !== "object" || Array.isArray(day)) {
+        return false;
+      }
+      return Object.keys(day).every(function (categoryId) {
+        var record = day[categoryId];
+        return (
+          record &&
+          typeof record === "object" &&
+          typeof record.hours === "number" &&
+          isFinite(record.hours)
+        );
+      });
+    });
+  }
+
+  function normalizeState(parsed, fallback) {
+    if (!parsed || typeof parsed !== "object") {
+      return null;
+    }
+    if (!isValidEntries(parsed.entries || {})) {
+      return null;
+    }
+    return {
+      theme: parsed.theme === "dark" ? "dark" : "light",
+      scheme: ["green", "red", "blue", "yellow", "purple"].indexOf(parsed.scheme) >= 0 ? parsed.scheme : "green",
+      startDate: typeof parsed.startDate === "string" ? parsed.startDate : fallback.startDate,
+      entries: parsed.entries && typeof parsed.entries === "object" ? parsed.entries : {}
+    };
+  }
+
   function loadState() {
     var fallback = defaultState();
     var raw;
@@ -75,15 +115,8 @@
     }
     try {
       var parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== "object") {
-        return fallback;
-      }
-      return {
-        theme: parsed.theme === "dark" ? "dark" : "light",
-        scheme: ["green", "red", "blue", "yellow", "purple"].indexOf(parsed.scheme) >= 0 ? parsed.scheme : "green",
-        startDate: typeof parsed.startDate === "string" ? parsed.startDate : fallback.startDate,
-        entries: parsed.entries && typeof parsed.entries === "object" ? parsed.entries : {}
-      };
+      var normalized = normalizeState(parsed, fallback);
+      return normalized || fallback;
     } catch (error) {
       return fallback;
     }
@@ -311,6 +344,67 @@
     elements.root.dataset.scheme = state.scheme;
     elements.schemeSelect.value = state.scheme;
   }
+
+  function exportData() {
+    try {
+      var json = JSON.stringify(state, null, 2);
+      var blob = new Blob([json], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "habit-tracker-export.json";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      elements.dataMessage.textContent = "Data byla exportována do souboru habit-tracker-export.json.";
+    } catch (error) {
+      elements.dataMessage.textContent = "Export se nezdařil.";
+    }
+  }
+
+  function importData(file) {
+    if (!file) {
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var parsed;
+      try {
+        parsed = JSON.parse(String(reader.result));
+      } catch (error) {
+        elements.dataMessage.textContent = "Soubor neobsahuje platný JSON.";
+        return;
+      }
+      var normalized = normalizeState(parsed, defaultState());
+      if (!normalized) {
+        elements.dataMessage.textContent = "Soubor má neplatnou strukturu dat.";
+        return;
+      }
+      state = normalized;
+      saveState();
+      applyTheme();
+      applyScheme();
+      render();
+      elements.dataMessage.textContent = "Data byla úspěšně importována.";
+    };
+    reader.onerror = function () {
+      elements.dataMessage.textContent = "Soubor se nepodařilo přečíst.";
+    };
+    reader.readAsText(file);
+  }
+
+  elements.exportButton.addEventListener("click", exportData);
+
+  elements.importButton.addEventListener("click", function () {
+    elements.importFileInput.click();
+  });
+
+  elements.importFileInput.addEventListener("change", function (event) {
+    var file = event.target.files && event.target.files[0];
+    importData(file);
+    elements.importFileInput.value = "";
+  });
 
   elements.themeToggle.addEventListener("click", function () {
     state.theme = state.theme === "light" ? "dark" : "light";
