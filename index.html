@@ -45,6 +45,15 @@
       <button class="tab" role="tab" type="button" data-category="hudba" aria-selected="false">
         Hudba
       </button>
+      <button class="tab" role="tab" type="button" data-category="vira" aria-selected="false">
+        Víra
+      </button>
+      <button class="tab" role="tab" type="button" data-category="uklid" aria-selected="false">
+        Úklid
+      </button>
+      <button class="tab" role="tab" type="button" data-category="relaxace" aria-selected="false">
+        Relaxace
+      </button>
     </nav>
 
     <main class="layout">
@@ -96,6 +105,18 @@
           <strong id="summary-total">0 h</strong>
         </div>
       </aside>
+
+      <section class="card totals-card">
+        <div class="card-head">
+          <h2 class="card-title">Celkový čas</h2>
+          <p class="card-subtitle" id="totals-range"></p>
+        </div>
+        <ul class="totals-list" id="totals-list"></ul>
+        <div class="summary-total">
+          <span>Celkem za období</span>
+          <strong id="totals-total">0 h</strong>
+        </div>
+      </section>
     </main>
 
     <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
