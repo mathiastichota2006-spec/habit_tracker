@@ -10,7 +10,10 @@
     { id: "cviceni", label: "Cvičení", scale: 2 },
     { id: "programovani", label: "Programování", scale: 4 },
     { id: "umeni", label: "Umění", scale: 3 },
-    { id: "hudba", label: "Hudba", scale: 2 }
+    { id: "hudba", label: "Hudba", scale: 2 },
+    { id: "vira", label: "Víra", scale: 1 },
+    { id: "uklid", label: "Úklid", scale: 2 },
+    { id: "relaxace", label: "Relaxace", scale: 2 }
   ];
 
   var dateFormatter = new Intl.DateTimeFormat("cs-CZ", {
@@ -35,7 +38,10 @@
     formMessage: document.getElementById("form-message"),
     summaryList: document.getElementById("summary-list"),
     summaryRange: document.getElementById("summary-range"),
-    summaryTotal: document.getElementById("summary-total")
+    summaryTotal: document.getElementById("summary-total"),
+    totalsList: document.getElementById("totals-list"),
+    totalsRange: document.getElementById("totals-range"),
+    totalsTotal: document.getElementById("totals-total")
   };
 
   var state = loadState();
@@ -258,9 +264,42 @@
     elements.summaryTotal.textContent = formatHours(total);
   }
 
+  function renderTotals() {
+    var days = daysSinceStart();
+    elements.totalsRange.textContent =
+      "Od " + dateFormatter.format(fromKey(state.startDate)) + " (" + days + " dní)";
+
+    elements.totalsList.textContent = "";
+    var grandTotal = 0;
+
+    CATEGORIES.forEach(function (category) {
+      var sum = 0;
+      Object.keys(state.entries).forEach(function (key) {
+        var record = getRecord(key, category.id);
+        if (record) {
+          sum += record.hours;
+        }
+      });
+      grandTotal += sum;
+
+      var item = document.createElement("li");
+      item.className = "totals-item";
+      var label = document.createElement("span");
+      label.textContent = category.label;
+      var value = document.createElement("strong");
+      value.textContent = formatHours(sum);
+      item.appendChild(label);
+      item.appendChild(value);
+      elements.totalsList.appendChild(item);
+    });
+
+    elements.totalsTotal.textContent = formatHours(grandTotal);
+  }
+
   function render() {
     renderHeatmap();
     renderSummary();
+    renderTotals();
   }
 
   function applyTheme() {
