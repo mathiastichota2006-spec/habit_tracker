@@ -1,4 +1,4 @@
-# habit_tracker
+# Habit Tracker
 
 Jednoduchá webová aplikace pro sledování návyků, jako je studium, spánek nebo cvičení. Slouží k rychlému přehledu o tom, jak se vám daří dlouhodobě plnit cíle a udržovat pravidelnost.
 
@@ -34,16 +34,6 @@ Tento projekt je licencován pod **AGPLv3** (GNU Affero General Public License v
 - Když upravíte a zveřejníte odvozenou verzi, musíte zachovat stejnou licenci AGPLv3.
 - Musíte ponechat informace o autorství a licenci.
 - Pokud aplikaci provozujete jako síťovou službu s úpravami, musíte nabídnout zdrojový kód upravené verze uživatelům služby.
-
-## Spuštění
-
-Aplikace je statická – stačí otevřít `index.html` v prohlížeči, případně spustit lokální server:
-
-```bash
-python3 -m http.server 8000
-```
-
-a otevřít <http://localhost:8000>.
 
 ## Ukládání dat
 
